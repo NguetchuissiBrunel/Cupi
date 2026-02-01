@@ -24,17 +24,22 @@ function ValentineContent() {
 
   useEffect(() => {
     setIsMounted(true);
-    const from = searchParams.get('from');
-    const to = searchParams.get('to');
-    const phone = searchParams.get('phone');
-    const g = searchParams.get('g') as Gender;
+    const data = searchParams.get('d');
 
-    if (from && to && (g === 'male' || g === 'female')) {
-      setSenderName(from);
-      setReceiverName(to);
-      setSenderPhone(phone || '');
-      setGender(g);
-      setStep('ask');
+    if (data) {
+      try {
+        // Decode obfuscated data
+        const decoded = JSON.parse(atob(data));
+        if (decoded.from && decoded.to && (decoded.g === 'male' || decoded.g === 'female')) {
+          setSenderName(decoded.from);
+          setReceiverName(decoded.to);
+          setSenderPhone(decoded.phone || '');
+          setGender(decoded.g);
+          setStep('ask');
+        }
+      } catch (e) {
+        console.error("Failed to decode URL parameters");
+      }
     }
   }, [searchParams]);
 
@@ -95,8 +100,16 @@ function ValentineContent() {
     if (!senderName || !receiverName || !gender) return;
     const baseUrl = window.location.origin + window.location.pathname;
     const formattedPhone = getFormattedPhone(senderPhone);
-    const params = new URLSearchParams({ from: senderName, to: receiverName, phone: formattedPhone, g: gender });
-    const link = `${baseUrl}?${params.toString()}`;
+
+    // Obfuscate data
+    const data = btoa(JSON.stringify({
+      from: senderName,
+      to: receiverName,
+      phone: formattedPhone,
+      g: gender
+    }));
+
+    const link = `${baseUrl}?d=${data}`;
     navigator.clipboard.writeText(link);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -111,7 +124,7 @@ function ValentineContent() {
           <motion.div key="setup" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="w-full max-w-sm bg-white/90 backdrop-blur-sm p-6 md:p-8 rounded-3xl shadow-2xl space-y-6 z-10 border border-pink-100">
             <div className="text-center space-y-2">
               <Heart className="w-10 h-10 text-pink-500 mx-auto fill-pink-500" />
-              <h1 className="text-2xl md:text-3xl font-dancing font-bold text-rose-600">Personnalisez votre demande</h1>
+              <h1 className="text-2xl md:text-3xl font-dancing font-bold text-rose-600">Cupidon ❤️</h1>
             </div>
             <div className="space-y-4">
               <div>

@@ -1,4 +1,4 @@
-# Ma Valentine 💖
+# Cupidon 💖
 
 Une application web interactive et élégante pour faire une demande de Saint-Valentin personnalisée.
 
