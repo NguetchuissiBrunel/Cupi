@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { Heart, Sparkles, User, UserCircle, ArrowRight, Share2, Check } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { motion, AnimatePresence } from 'framer-motion';
+import emailjs from '@emailjs/browser';
 
 type Step = 'setup' | 'gender' | 'link' | 'ask' | 'celebrate';
 type Gender = 'male' | 'female' | null;
@@ -14,6 +15,7 @@ function ValentineContent() {
   const [step, setStep] = useState<Step>('setup');
   const [senderName, setSenderName] = useState('');
   const [receiverName, setReceiverName] = useState('');
+  const [senderEmail, setSenderEmail] = useState('');
   const [senderPhone, setSenderPhone] = useState('');
   const [gender, setGender] = useState<Gender>(null);
   const [noButtonStyle, setNoButtonStyle] = useState<React.CSSProperties>({});
@@ -46,6 +48,7 @@ function ValentineContent() {
         if (step === 'setup' && decoded.from && decoded.to && (decoded.g === 'male' || decoded.g === 'female')) {
           setSenderName(decoded.from);
           setReceiverName(decoded.to);
+          setSenderEmail(decoded.email || '');
           setSenderPhone(decoded.phone || '');
           setGender(decoded.g);
           setStep('ask');
@@ -113,6 +116,25 @@ function ValentineContent() {
   }, [isNoButtonVisible]);
 
   const handleYes = () => {
+    // Fire and forget email notification
+    console.log("Attempting to send email to:", senderEmail); // Debug log
+    if (senderEmail) {
+      emailjs.send(
+        'cupidon', // Replace with user's Service ID
+        'template_2pw9cwa', // Replace with user's Template ID
+        {
+          to_name: senderName,
+          to_email: senderEmail,
+          from_name: receiverName,
+          message: `${receiverName} a dit OUI ! 🎉 C'est un match !`
+        },
+        '85q6pISTnSm_vdZzu' // Replace with user's Public Key
+      ).then(
+        () => console.log("EmailJS Success"),
+        (err) => console.error("EmailJS Failed:", JSON.stringify(err))
+      );
+    }
+
     setStep('celebrate');
     const count = 150;
     const defaults = { origin: { y: 0.7 }, colors: ['#ff0000', '#ff69b4', '#ff1493', '#db7093'] };
@@ -140,6 +162,7 @@ function ValentineContent() {
     const data = btoa(JSON.stringify({
       from: senderName,
       to: receiverName,
+      email: senderEmail,
       phone: formattedPhone,
       g: gender
     }));
@@ -169,6 +192,10 @@ function ValentineContent() {
               <div>
                 <label className="text-xs font-bold text-rose-400 uppercase ml-2 mb-1 block">Son nom </label>
                 <input value={receiverName} onChange={(e) => setReceiverName(e.target.value)} placeholder="Ex: Marie" className="w-full px-5 py-3 rounded-2xl border-2 border-pink-50 outline-none text-base focus:border-pink-300 transition-all bg-white/50" />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-rose-400 uppercase ml-2 mb-1 block">Ton Email (pour la notif)</label>
+                <input type="email" value={senderEmail} onChange={(e) => setSenderEmail(e.target.value)} placeholder="Ex: jean@mail.com" className="w-full px-5 py-3 rounded-2xl border-2 border-pink-50 outline-none text-base focus:border-pink-300 transition-all bg-white/50" />
               </div>
               <div>
                 <label className="text-xs font-bold text-rose-400 uppercase ml-2 mb-1 block">Ton WhatsApp (9 chiffres)</label>
