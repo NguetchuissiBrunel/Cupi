@@ -5,14 +5,12 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Cupidon',
-  description: 'Jeu de matchmaking par affinités',
+  title: 'Ma Valentine',
+  description: 'Une demande très spéciale',
   icons: {
     icon: '/icon.png',
   },
 }
-
-import Navbar from '@/components/Navbar';
 
 export default function RootLayout({
   children,
