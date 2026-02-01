@@ -1,0 +1,31 @@
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import './globals.css'
+
+const inter = Inter({ subsets: ['latin'] })
+
+export const metadata: Metadata = {
+  title: 'Cupidon',
+  description: 'Jeu de matchmaking par affinités',
+  icons: {
+    icon: '/icon.png',
+  },
+}
+
+import Navbar from '@/components/Navbar';
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="fr">
+      <body className={inter.className}>
+        <main>
+          {children}
+        </main>
+      </body>
+    </html>
+  )
+}
