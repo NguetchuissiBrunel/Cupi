@@ -6,7 +6,7 @@ import { Heart, Sparkles, User, UserCircle, ArrowRight, Share2, Check } from 'lu
 import confetti from 'canvas-confetti';
 import { motion, AnimatePresence } from 'framer-motion';
 
-type Step = 'setup' | 'gender' | 'ask' | 'celebrate';
+type Step = 'setup' | 'gender' | 'link' | 'ask' | 'celebrate';
 type Gender = 'male' | 'female' | null;
 
 function ValentineContent() {
@@ -21,27 +21,40 @@ function ValentineContent() {
   const [isMounted, setIsMounted] = useState(false);
   const [isNoButtonVisible, setIsNoButtonVisible] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [backgroundHearts, setBackgroundHearts] = useState<{ id: number; top: string; left: string; duration: number }[]>([]);
 
   useEffect(() => {
     setIsMounted(true);
+    // Generate hearts only on client side after mount
+    const hearts = [...Array(15)].map((_, i) => ({
+      id: i,
+      top: `${Math.random() * 100}%`,
+      left: `${Math.random() * 100}%`,
+      duration: 5 + Math.random() * 5
+    }));
+    setBackgroundHearts(hearts);
+  }, []);
+
+  // eslint-disable-next-line
+  useEffect(() => {
     const data = searchParams.get('d');
 
     if (data) {
       try {
         // Decode obfuscated data
         const decoded = JSON.parse(atob(data));
-        if (decoded.from && decoded.to && (decoded.g === 'male' || decoded.g === 'female')) {
+        if (step === 'setup' && decoded.from && decoded.to && (decoded.g === 'male' || decoded.g === 'female')) {
           setSenderName(decoded.from);
           setReceiverName(decoded.to);
           setSenderPhone(decoded.phone || '');
           setGender(decoded.g);
           setStep('ask');
         }
-      } catch (e) {
+      } catch {
         console.error("Failed to decode URL parameters");
       }
     }
-  }, [searchParams]);
+  }, [searchParams, step]);
 
   // Handle Cameroon-specific phone formatting
   const getFormattedPhone = (phone: string) => {
@@ -65,16 +78,28 @@ function ValentineContent() {
 
       // Mobile-optimized dimensions for calculation
       const isMobile = window.innerWidth < 768;
-      const buttonWidth = isMobile ? 120 : 160;
-      const buttonHeight = isMobile ? 50 : 70;
+      // Adjusted button dimensions for mobile to match new larger size
+      // Width estimated based on text "Non" + padding with text-lg
+      const buttonWidth = isMobile ? 150 : 160;
+      const buttonHeight = isMobile ? 55 : 70;
 
       // Safe margins to prevent going off-screen
-      const margin = 15;
+      const margin = 30; // Increased margin for strict safety
+      const safeAreaTop = 100; // Avoid top area where title/heart usually are
+
+      // Calculate strict boundaries
+      const minX = margin;
       const maxX = window.innerWidth - buttonWidth - margin;
+
+      const minY = safeAreaTop;
       const maxY = window.innerHeight - buttonHeight - margin;
 
-      const randomX = Math.min(Math.max(margin, Math.random() * maxX), maxX);
-      const randomY = Math.min(Math.max(margin, Math.random() * maxY), maxY);
+      // Ensure valid ranges (if screen is too small, fallback to min)
+      const validMaxX = Math.max(minX, maxX);
+      const validMaxY = Math.max(minY, maxY);
+
+      const randomX = minX + Math.random() * (validMaxX - minX);
+      const randomY = minY + Math.random() * (validMaxY - minY);
 
       setNoButtonStyle({
         position: 'fixed',
@@ -91,7 +116,7 @@ function ValentineContent() {
     setStep('celebrate');
     const count = 150;
     const defaults = { origin: { y: 0.7 }, colors: ['#ff0000', '#ff69b4', '#ff1493', '#db7093'] };
-    const fire = (ratio: number, opts: any) => confetti({ ...defaults, ...opts, particleCount: Math.floor(count * ratio) });
+    const fire = (ratio: number, opts: object) => confetti({ ...defaults, ...opts, particleCount: Math.floor(count * ratio) });
     fire(0.25, { spread: 26, startVelocity: 55 });
     fire(0.2, { spread: 60 });
     fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
@@ -166,11 +191,11 @@ function ValentineContent() {
           <motion.div key="gender" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="text-center space-y-8 md:space-y-12 z-10 w-full">
             <h1 className="text-3xl md:text-5xl font-dancing font-bold text-rose-600 px-4">Quel est le genre de {receiverName} ?</h1>
             <div className="flex gap-6 md:gap-12 justify-center px-4">
-              <button onClick={() => { setGender('male'); setStep('ask'); }} className="flex flex-col items-center gap-4 group flex-1 max-w-[150px]">
+              <button onClick={() => { setGender('male'); setStep('link'); }} className="flex flex-col items-center gap-4 group flex-1 max-w-[150px]">
                 <div className="w-full aspect-square bg-white rounded-3xl shadow-xl border-4 border-pink-50 group-hover:border-pink-300 transition-all flex items-center justify-center"><User className="w-12 h-12 md:w-16 md:h-16 text-blue-400" /></div>
                 <span className="text-lg md:text-xl font-bold text-rose-500">HOMME</span>
               </button>
-              <button onClick={() => { setGender('female'); setStep('ask'); }} className="flex flex-col items-center gap-4 group flex-1 max-w-[150px]">
+              <button onClick={() => { setGender('female'); setStep('link'); }} className="flex flex-col items-center gap-4 group flex-1 max-w-[150px]">
                 <div className="w-full aspect-square bg-white rounded-3xl shadow-xl border-4 border-pink-50 group-hover:border-pink-300 transition-all flex items-center justify-center"><UserCircle className="w-12 h-12 md:w-16 md:h-16 text-pink-400" /></div>
                 <span className="text-lg md:text-xl font-bold text-rose-500">FEMME</span>
               </button>
@@ -178,21 +203,44 @@ function ValentineContent() {
           </motion.div>
         )}
 
+        {step === 'link' && (
+          <motion.div key="link" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="w-full max-w-sm bg-white/90 backdrop-blur-sm p-6 md:p-8 rounded-3xl shadow-2xl space-y-6 z-10 border border-pink-100 text-center">
+            <div className="space-y-4">
+              <div className="w-20 h-20 bg-pink-100 rounded-full flex items-center justify-center mx-auto">
+                <Sparkles className="w-10 h-10 text-pink-500" />
+              </div>
+              <h2 className="text-2xl font-dancing font-bold text-rose-600">C&apos;est presque prêt !</h2>
+              <p className="text-gray-600 text-sm">Tes informations ont été enregistrées. Clique sur le bouton ci-dessous pour générer ton lien personnalisé et l&apos;envoyer à {receiverName}.</p>
+            </div>
+
+            <button
+              onClick={generateLink}
+              className="w-full bg-gradient-to-r from-pink-500 to-rose-600 text-white font-bold py-4 rounded-2xl shadow-lg flex items-center justify-center gap-2 mt-4 active:scale-95 transition-transform"
+            >
+              {copied ? <><Check className="w-5 h-5" /> Lien Copié !</> : <><Share2 className="w-5 h-5" /> Générer & Copier le lien</>}
+            </button>
+
+            {copied && (
+              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-green-500 font-bold text-sm">
+                Lien copié dans le presse-papier !
+              </motion.p>
+            )}
+
+            <p className="text-xs text-gray-400 italic mt-4">
+              Envoie ensuite ce lien à {receiverName} pour qu&apos;il/elle puisse répondre.
+            </p>
+          </motion.div>
+        )}
+
         {step === 'ask' && (
           <motion.div key="ask" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.2 }} className="text-center space-y-8 md:space-y-12 z-10 w-full max-w-lg">
-            {!searchParams.get('d') && (
-              <div className="fixed top-4 right-4 z-50">
-                <button onClick={generateLink} className="bg-white/90 backdrop-blur-md p-3 rounded-2xl shadow-lg hover:bg-white transition-all flex items-center gap-2 text-rose-500 font-bold text-sm border border-pink-100">
-                  {copied ? <><Check className="w-4 h-4" /> Copié !</> : <><Share2 className="w-4 h-4" /> Partager</>}
-                </button>
-              </div>
-            )}
+            {/* Remove the separate Share button as it's now in the 'link' step flow */}
             <div className="space-y-6 px-4">
               <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ repeat: Infinity, duration: 1.5 }} className="flex justify-center"><Heart className="w-20 h-20 md:w-24 md:h-24 text-pink-500 fill-pink-500 drop-shadow-lg" /></motion.div>
               <h1 className="text-4xl md:text-6xl font-dancing font-bold text-rose-600 leading-tight">{receiverName}, veux-tu être {gender === 'male' ? "le Valentin" : "la Valentine"} de {senderName} ?</h1>
             </div>
             <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 px-4 mt-8">
-              <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} onClick={handleYes} className="w-full md:w-auto bg-gradient-to-r from-pink-500 to-rose-600 text-white font-bold py-3 md:py-5 px-8 md:px-12 rounded-full text-lg md:text-2xl shadow-2xl border-4 border-white flex items-center justify-center gap-3">OUI ! <Sparkles className="w-6 h-6" /></motion.button>
+              <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} onClick={handleYes} className="w-full md:w-auto bg-gradient-to-r from-pink-500 to-rose-600 text-white font-bold py-3 md:py-5 px-6 md:px-12 rounded-full text-lg md:text-2xl shadow-2xl border-4 border-white flex items-center justify-center gap-3">OUI ! <Sparkles className="w-6 h-6" /></motion.button>
               <AnimatePresence>
                 {isNoButtonVisible && (
                   <motion.button
@@ -204,7 +252,7 @@ function ValentineContent() {
                     style={noButtonStyle}
                     onMouseEnter={moveButton}
                     onClick={moveButton}
-                    className="w-full md:w-auto bg-gradient-to-r from-pink-400 to-rose-500 text-white font-bold py-3 md:py-5 px-8 md:px-12 rounded-full text-lg md:text-2xl shadow-xl border-4 border-white whitespace-nowrap"
+                    className="min-w-[150px] md:min-w-0 bg-gradient-to-r from-pink-400 to-rose-500 text-white font-bold py-3 md:py-5 px-6 md:px-12 rounded-full text-lg md:text-2xl shadow-xl border-4 border-white whitespace-nowrap"
                   >
                     {noCount > 0 ? messages[(noCount - 1) % messages.length] : "Non"}
                   </motion.button>
@@ -235,8 +283,16 @@ function ValentineContent() {
 
       {isMounted && (
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {[...Array(15)].map((_, i) => (
-            <motion.div key={i} className="absolute text-pink-200 opacity-20 text-3xl" initial={{ top: `${Math.random() * 100}%`, left: `${Math.random() * 100}%` }} animate={{ y: [-20, 20, -20], rotate: [0, 360] }} transition={{ duration: 5 + Math.random() * 5, repeat: Infinity }}>❤️</motion.div>
+          {backgroundHearts.map((heart) => (
+            <motion.div
+              key={heart.id}
+              className="absolute text-pink-200 opacity-20 text-3xl"
+              initial={{ top: heart.top, left: heart.left }}
+              animate={{ y: [-20, 20, -20], rotate: [0, 360] }}
+              transition={{ duration: heart.duration, repeat: Infinity }}
+            >
+              ❤️
+            </motion.div>
           ))}
         </div>
       )}

@@ -32,7 +32,7 @@ npm run dev
 
 ## Déploiement 🌍
 
-L'application est prête à être déployée sur **Vercel** ou toute plateforme supportant Next.js. Une fois déployée, utilisez l'interface de configuration pour générer votre lien de partage.
+L'application est prête à être déployée sur **Vercel**
 
 ---
 Fait avec ❤️ pour une Saint-Valentin mémorable.
