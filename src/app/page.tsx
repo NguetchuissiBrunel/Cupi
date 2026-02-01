@@ -74,7 +74,7 @@ function ValentineContent() {
       });
       setNoCount((prev) => prev + 1);
       setIsNoButtonVisible(true);
-    }, 150);
+    }, 20);
   }, [isNoButtonVisible]);
 
   const handleYes = () => {
@@ -170,7 +170,7 @@ function ValentineContent() {
 
         {step === 'ask' && (
           <motion.div key="ask" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.2 }} className="text-center space-y-8 md:space-y-12 z-10 w-full max-w-lg">
-            {!searchParams.get('from') && (
+            {!searchParams.get('d') && (
               <div className="fixed top-4 right-4 z-50">
                 <button onClick={generateLink} className="bg-white/90 backdrop-blur-md p-3 rounded-2xl shadow-lg hover:bg-white transition-all flex items-center gap-2 text-rose-500 font-bold text-sm border border-pink-100">
                   {copied ? <><Check className="w-4 h-4" /> Copié !</> : <><Share2 className="w-4 h-4" /> Partager</>}
@@ -185,7 +185,17 @@ function ValentineContent() {
               <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} onClick={handleYes} className="w-full md:w-auto bg-gradient-to-r from-pink-500 to-rose-600 text-white font-bold py-4 md:py-5 px-12 rounded-full text-xl md:text-2xl shadow-2xl border-4 border-white flex items-center justify-center gap-3">OUI ! <Sparkles className="w-6 h-6" /></motion.button>
               <AnimatePresence>
                 {isNoButtonVisible && (
-                  <motion.button key="no-button" initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0, opacity: 0 }} style={noButtonStyle} onMouseEnter={moveButton} onClick={moveButton} className="w-full md:w-auto bg-gradient-to-r from-pink-400 to-rose-500 text-white font-bold py-4 md:py-5 px-12 rounded-full text-xl md:text-2xl shadow-xl border-4 border-white whitespace-nowrap">
+                  <motion.button
+                    key="no-button"
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0, opacity: 0 }}
+                    transition={{ duration: 0.05 }}
+                    style={noButtonStyle}
+                    onMouseEnter={moveButton}
+                    onClick={moveButton}
+                    className="w-full md:w-auto bg-gradient-to-r from-pink-400 to-rose-500 text-white font-bold py-4 md:py-5 px-12 rounded-full text-xl md:text-2xl shadow-xl border-4 border-white whitespace-nowrap"
+                  >
                     {noCount > 0 ? messages[(noCount - 1) % messages.length] : "Non"}
                   </motion.button>
                 )}
