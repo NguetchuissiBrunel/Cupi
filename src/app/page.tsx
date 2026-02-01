@@ -57,14 +57,20 @@ function ValentineContent() {
     setIsNoButtonVisible(false);
 
     setTimeout(() => {
-      // Improved mobile-safe dimensions
-      const buttonWidth = 140;
-      const buttonHeight = 60;
-      const maxX = typeof window !== 'undefined' ? window.innerWidth - buttonWidth : 300;
-      const maxY = typeof window !== 'undefined' ? window.innerHeight - buttonHeight : 500;
+      if (typeof window === 'undefined') return;
 
-      const randomX = Math.min(Math.max(10, Math.random() * maxX), maxX - 10);
-      const randomY = Math.min(Math.max(10, Math.random() * maxY), maxY - 10);
+      // Mobile-optimized dimensions for calculation
+      const isMobile = window.innerWidth < 768;
+      const buttonWidth = isMobile ? 120 : 160;
+      const buttonHeight = isMobile ? 50 : 70;
+
+      // Safe margins to prevent going off-screen
+      const margin = 15;
+      const maxX = window.innerWidth - buttonWidth - margin;
+      const maxY = window.innerHeight - buttonHeight - margin;
+
+      const randomX = Math.min(Math.max(margin, Math.random() * maxX), maxX);
+      const randomY = Math.min(Math.max(margin, Math.random() * maxY), maxY);
 
       setNoButtonStyle({
         position: 'fixed',
@@ -132,7 +138,7 @@ function ValentineContent() {
                 <input value={senderName} onChange={(e) => setSenderName(e.target.value)} placeholder="Ex: Jean" className="w-full px-5 py-3 rounded-2xl border-2 border-pink-50 outline-none text-base focus:border-pink-300 transition-all bg-white/50" />
               </div>
               <div>
-                <label className="text-xs font-bold text-rose-400 uppercase ml-2 mb-1 block">Son nom (Valentine)</label>
+                <label className="text-xs font-bold text-rose-400 uppercase ml-2 mb-1 block">Son nom </label>
                 <input value={receiverName} onChange={(e) => setReceiverName(e.target.value)} placeholder="Ex: Marie" className="w-full px-5 py-3 rounded-2xl border-2 border-pink-50 outline-none text-base focus:border-pink-300 transition-all bg-white/50" />
               </div>
               <div>
@@ -181,8 +187,8 @@ function ValentineContent() {
               <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ repeat: Infinity, duration: 1.5 }} className="flex justify-center"><Heart className="w-20 h-20 md:w-24 md:h-24 text-pink-500 fill-pink-500 drop-shadow-lg" /></motion.div>
               <h1 className="text-4xl md:text-6xl font-dancing font-bold text-rose-600 leading-tight">{receiverName}, veux-tu être {gender === 'male' ? "le Valentin" : "la Valentine"} de {senderName} ?</h1>
             </div>
-            <div className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-8 px-4 mt-8">
-              <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} onClick={handleYes} className="w-full md:w-auto bg-gradient-to-r from-pink-500 to-rose-600 text-white font-bold py-4 md:py-5 px-12 rounded-full text-xl md:text-2xl shadow-2xl border-4 border-white flex items-center justify-center gap-3">OUI ! <Sparkles className="w-6 h-6" /></motion.button>
+            <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 px-4 mt-8">
+              <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} onClick={handleYes} className="w-full md:w-auto bg-gradient-to-r from-pink-500 to-rose-600 text-white font-bold py-3 md:py-5 px-8 md:px-12 rounded-full text-lg md:text-2xl shadow-2xl border-4 border-white flex items-center justify-center gap-3">OUI ! <Sparkles className="w-6 h-6" /></motion.button>
               <AnimatePresence>
                 {isNoButtonVisible && (
                   <motion.button
@@ -194,7 +200,7 @@ function ValentineContent() {
                     style={noButtonStyle}
                     onMouseEnter={moveButton}
                     onClick={moveButton}
-                    className="w-full md:w-auto bg-gradient-to-r from-pink-400 to-rose-500 text-white font-bold py-4 md:py-5 px-12 rounded-full text-xl md:text-2xl shadow-xl border-4 border-white whitespace-nowrap"
+                    className="w-full md:w-auto bg-gradient-to-r from-pink-400 to-rose-500 text-white font-bold py-3 md:py-5 px-8 md:px-12 rounded-full text-lg md:text-2xl shadow-xl border-4 border-white whitespace-nowrap"
                   >
                     {noCount > 0 ? messages[(noCount - 1) % messages.length] : "Non"}
                   </motion.button>
