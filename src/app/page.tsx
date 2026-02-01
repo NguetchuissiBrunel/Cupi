@@ -45,11 +45,15 @@ function ValentineContent() {
 
   // Handle Cameroon-specific phone formatting
   const getFormattedPhone = (phone: string) => {
-    const cleaned = phone.replace(/\s+/g, '');
+    const cleaned = phone.replace(/\D/g, ''); // Remove all non-digits
     if (cleaned.length === 9 && (cleaned.startsWith('6') || cleaned.startsWith('2'))) {
-      return `237${cleaned}`;
+      return `+237${cleaned}`;
     }
-    return cleaned;
+    // If it already has 237 but no +, add the +
+    if (cleaned.startsWith('237') && cleaned.length === 12) {
+      return `+${cleaned}`;
+    }
+    return phone.startsWith('+') ? phone : `+${phone}`;
   };
 
   const moveButton = useCallback(() => {
