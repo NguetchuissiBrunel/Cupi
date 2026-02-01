@@ -1,88 +1,38 @@
-# Cupi App
+# Ma Valentine 💖
 
-Cupidon est une application de rencontres moderne et interactive conçue pour connecter les âmes sœurs grâce à un algorithme de matchmaking par affinités, des appels vidéo en temps réel et un chat fluide.
+Une application web interactive et élégante pour faire une demande de Saint-Valentin personnalisée.
 
-![Cupi App](/public/logo.png) (Logo à ajouter)
+## Fonctionnalités 🏹
 
-## ✨ Fonctionnalités Principales
+- **Personnalisation Totale** : Saisie des noms du demandeur et du destinataire.
+- **Support Cameroun 🇨🇲** : Formatage automatique des numéros WhatsApp au format national.
+- **Partage Facile** : Génération d'un lien unique incluant tous les paramètres.
+- **Bouton "Non" Fugitif** : Un bouton qui se téléporte pour rendre le refus impossible !
+- **Bouton "Oui" Festif** : Déclenche un feu d'artifice de cœurs et des confettis.
+- **Réponse Directe** : Une fois que le destinataire accepte, un bouton permet d'envoyer la réponse directement par WhatsApp.
+- **Design Responsive** : Optimisé pour une expérience fluide sur smartphone et ordinateur.
 
-- **Matchmaking Intelligent** : Un algorithme basé sur les préférences et la géolocalisation pour trouver des profils compatibles.
-- **Chat en Temps Réel** : Messagerie instantanée pour échanger avec vos matchs sans délai.
-- **Appels Vidéo (WebRTC)** : Faites connaissance en face à face virtuel grâce à la fonctionnalité d'appel vidéo intégrée, sans quitter l'application.
-- **Profils Riches** : Créez un profil détaillé avec photos, bio, âge et genre.
-- **Interface Premium** : Un design soigné, réactif et animé pour une expérience utilisateur agréable.
-- **Système de "J'aime"** : Likez les profils qui vous intéressent pour déclencher un match.
+## Technologies Utilisées ✨
 
-## 🛠 Technologies Utilisées
+- **Next.js 15+** (App Router)
+- **Framer Motion** (Animations)
+- **Lucide React** (Icones)
+- **Canvas Confetti** (Effets de fête)
+- **Tailwind CSS** (Stylisation)
 
-Ce projet utilise une stack technique moderne et performante :
+## Installation Locale 🚀
 
-- **Frontend** : [Next.js 16](https://nextjs.org/) (App Router), [React 19](https://react.dev/)
-- **Langage** : [TypeScript](https://www.typescriptlang.org/)
-- **Styles** : [Tailwind CSS v4](https://tailwindcss.com/)
-- **Base de Données** : [MongoDB](https://www.mongodb.com/) (avec Mongoose)
-- **Temps Réel** : Polling / WebSocket (Socket.io - *en cours d'intégration*)
-- **Vidéo** : WebRTC (Native API)
+```bash
+# Installer les dépendances
+npm install
 
-## 🚀 Installation et Démarrage
-
-Suivez ces étapes pour lancer le projet localement :
-
-### Prérequis
-
-- Node.js (v18 ou supérieur recommandé)
-- npm ou yarn
-- Une instance MongoDB (locale ou Atlas)
-
-### Étapes
-
-1.  **Cloner le dépôt**
-    ```bash
-    git clone https://github.com/votre-user/cupidon-app.git
-    cd cupidon-app
-    ```
-
-2.  **Installer les dépendances**
-    ```bash
-    npm install
-    ```
-
-3.  **Configurer les variables d'environnement**
-    Créez un fichier `.env.local` à la racine du projet et ajoutez votre chaîne de connexion MongoDB :
-    ```env
-    MONGODB_URI=mongodb://localhost:27017/cupidon
-    # Ajoutez d'autres clés si nécessaire (NEXTAUTH_SECRET, etc.)
-    ```
-
-4.  **Lancer le serveur de développement**
-    ```bash
-    npm run dev
-    ```
-
-5.  **Accéder à l'application**
-    Ouvrez votre navigateur et allez sur `http://localhost:3000`.
-
-## 📁 Structure du Projet
-
-```
-cupidon-app/
-├── src/
-│   ├── app/              # Routes Next.js (App Router)
-│   │   ├── api/          # Endpoints API (Backend)
-│   │   ├── chat/         # Page de messagerie
-│   │   ├── match/        # Page de match
-│   │   └── ...
-│   ├── components/       # Composants React réutilisables (Navbar, VideoCall, etc.)
-│   ├── lib/              # Utilitaires (connexion DB, auth)
-│   └── models/           # Schémas Mongoose (User, Message, Match)
-├── public/               # Assets statiques
-└── ...
+# Lancer en mode développement
+npm run dev
 ```
 
-## 🤝 Contribuer
+## Déploiement 🌍
 
-Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou une pull request pour suggérer des améliorations.
+L'application est prête à être déployée sur **Vercel** ou toute plateforme supportant Next.js. Une fois déployée, utilisez l'interface de configuration pour générer votre lien de partage.
 
-## 📄 Licence
-
-Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
+---
+Fait avec ❤️ pour une Saint-Valentin mémorable.
